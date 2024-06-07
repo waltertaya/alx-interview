@@ -1,71 +1,45 @@
 #!/usr/bin/python3
-"""Solves the lock boxes puzzle"""
-
-
-def find_next_open_box(open_boxes):
-    """Finds the next box that has been opened but not yet checked.
-
-    Args:
-        open_boxes (dict): Dictionary containing the status of opened boxes.
-
-    Returns:
-        list: List of keys contained in the next box to check.
-    """
-    for index, box in open_boxes.items():
-        if box.get('status') == 'opened':
-            box['status'] = 'opened/checked'
-            return box.get('keys')
-    return None
+"""
+Module for lockboxes
+"""
 
 
 def canUnlockAll(boxes):
-    """Determines if all boxes can be opened.
-
+    """
+    Determines if all the boxes can be opened.
     Args:
-        boxes (list): List of lists, where each inner
-        list contains keys for other boxes.
+        boxes (list): A list of lists where each inner list represents a box.
 
     Returns:
-        bool: True if all boxes can be opened, otherwise False.
+        bool: True if all boxes can be opened, False otherwise.
     """
-    if len(boxes) <= 1 or boxes == [[]]:
-        return True
+    if not boxes:
+        return False
 
-    opened_boxes = {}
-    while True:
-        if len(opened_boxes) == 0:
-            opened_boxes[0] = {
-                'status': 'opened',
-                'keys': boxes[0],
-            }
-        keys = find_next_open_box(opened_boxes)
-        if keys:
-            for key in keys:
-                try:
-                    opened_boxe = opened_boxes.get(key)
-                    opened_boxed = opened_boxes.get(key).get('status')
-                    if opened_boxe and opened_boxed == 'opened/checked':
-                        continue
-                    opened_boxes[key] = {
-                        'status': 'opened',
-                        'keys': boxes[key]
-                    }
-                except (KeyError, IndexError):
-                    continue
-        elif 'opened' in [box.get('status') for box in opened_boxes.values()]:
+    keys = set([0])
+    visited = set()
+
+    while keys:
+        current_key = keys.pop()
+
+        if current_key in visited:
             continue
-        elif len(opened_boxes) == len(boxes):
-            break
-        else:
-            return False
 
-    return len(opened_boxes) == len(boxes)
+        visited.add(current_key)
 
+        for key in boxes[current_key]:
+            if key not in visited and key < len(boxes):
+                keys.add(key)
 
-def main():
-    """Entry point"""
-    print(canUnlockAll([[]]))
+    return len(visited) == len(boxes)
 
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    boxes = [[1], [2], [3], [4], []]
+    print(canUnlockAll(boxes))
+
+    boxes = [[1, 4, 6], [2], [0, 4, 1], [5, 6, 2], [3], [4, 1], [6]]
+    print(canUnlockAll(boxes))
+
+    boxes = [[1, 4], [2], [0, 4, 1], [3], [], [4, 1], [5, 6]]
+    print(canUnlockAll(boxes))
