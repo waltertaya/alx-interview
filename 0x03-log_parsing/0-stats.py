@@ -1,47 +1,40 @@
 #!/usr/bin/python3
 import sys
-import signal
-import re
-
-total_size = 0
-status_codes_count = {200: 0, 301: 0, 400: 0, 401: 0,
-                      403: 0, 404: 0, 405: 0, 500: 0}
-line_count = 0
 
 
-def print_statistics():
+def print_msg(dict_sc, total_file_size):
     """Prints current statistics based on accumulated data."""
-    print(f"File size: {total_size}")
-    for code in sorted(status_codes_count.keys()):
-        if status_codes_count[code] > 0:
-            print(f"{code}: {status_codes_count[code]}")
+    print("File size: {}".format(total_file_size))
+    for key, val in sorted(dict_sc.items()):
+        if val != 0:
+            print("{}: {}".format(key, val))
 
 
-def signal_handler(sig, frame):
-    """Handles SIGINT signal (Ctrl+C)
-      to print statistics and exit gracefully."""
-    print_statistics()
-    sys.exit(0)
+total_file_size = 0
+code = 0
+counter = 0
+dict_sc = {'200': 0, '301': 0, '400': 0, '401': 0,
+           '403': 0, '404': 0, '405': 0, '500': 0}
 
 
-signal.signal(signal.SIGINT, signal_handler)
+try:
+    for line in sys.stdin:
+        parsed_line = line.split()
+        parsed_line = parsed_line[::-1]
 
-log_pattern = re.compile(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} - \[.*\] '
-                         r'"GET /projects/260 HTTP/1\.1" (\d{3}) (\d+)$')
+        if len(parsed_line) > 2:
+            counter += 1
 
-for line in sys.stdin:
-    line = line.strip()
-    match = log_pattern.match(line)
-    if match:
-        status_code = int(match.group(1))
-        file_size = int(match.group(2))
-        total_size += file_size
-        if status_code in status_codes_count:
-            status_codes_count[status_code] += 1
-        line_count += 1
-        if line_count % 10 == 0:
-            print_statistics()
-    else:
-        continue
+            if counter <= 10:
+                total_file_size += int(parsed_line[0])
+                code = parsed_line[1]
 
-print_statistics()
+                if (code in dict_sc.keys()):
+                    dict_sc[code] += 1
+
+            if (counter == 10):
+                print_msg(dict_sc, total_file_size)
+                counter = 0
+
+finally:
+    print_msg(dict_sc, total_file_size)
