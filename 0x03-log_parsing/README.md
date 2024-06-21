@@ -17,7 +17,6 @@ This script is designed to parse log entries from standard input (stdin), comput
 ### Tasks
 - **Log parsing**:
   - **Mandatory**
-  - Score: 0.0% (Checks completed: 0.0%)
   - Write a script that reads stdin line by line and computes metrics:
     - Input format: `<IP Address> - [<date>] "GET /projects/260 HTTP/1.1" <status code> <file size>`
     - After every 10 lines and/or a keyboard interruption (CTRL + C), print these statistics:
