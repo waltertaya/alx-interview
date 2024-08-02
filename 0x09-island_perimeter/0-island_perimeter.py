@@ -3,7 +3,12 @@
 0-island_perimeter.py
 '''
 
+
 def island_perimeter(grid):
+    '''
+    Create a function def island_perimeter(grid):
+    returns the perimeter of the island described in grid
+    '''
     perimeter = 0
     rows = len(grid)
     cols = len(grid[0])
