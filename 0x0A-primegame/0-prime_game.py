@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+"""
+0-prime_game.py file
+"""
+
+
 def sieve(n):
     """Uses the Sieve of Eratosthenes to find all prime numbers up to n."""
     is_prime = [True] * (n + 1)
